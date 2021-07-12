@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web_plotly/plot.dart';
+import 'package:flutter_web_plotly/src/plot.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'package:flutter_web_plotly/src/fakeui/fake_platformviewregistry.dart'
@@ -40,4 +40,3 @@ class _PlotlyState extends State<Plotly> {
     return HtmlElementView(viewType: widget.viewId);
   }
 }
-

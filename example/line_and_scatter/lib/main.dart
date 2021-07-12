@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web_plotly/plotly.dart';
+import 'package:flutter_web_plotly/flutter_web_plotly.dart';
 
 void main() async {
   runApp(MyApp());
