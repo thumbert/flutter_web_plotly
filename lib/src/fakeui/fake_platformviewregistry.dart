@@ -7,4 +7,3 @@ class platformViewRegistry {
     throw UnimplementedError();
   }
 }
-

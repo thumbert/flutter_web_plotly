@@ -10,20 +10,18 @@ import 'dart:async';
 
 /// Interactive scientific chart.
 class Plot {
-  final JsObject? _plotly;
-  final Element _container;
-  final JsObject _proxy;
-
   /// Creates a new plot in an empty `<div>` element.
   ///
   /// A note on sizing: You can either supply height and width in layout, or
   /// give the `div` a height and width in CSS.
   Plot(Element container, List data, Map<String, dynamic> layout,
-      {bool showLink: false,
-      bool? staticPlot,
-      String? linkText,
-      bool displaylogo: false,
+      {bool? displaylogo,
       bool? displayModeBar,
+      bool? editable,
+      String? linkText,
+      bool? responsive,
+      bool? showLink,
+      bool? staticPlot,
       bool? scrollZoom})
       : _plotly = context['Plotly'],
         _container = container,
@@ -34,15 +32,21 @@ class Plot {
     var _data = JsObject.jsify(data);
     var _layout = JsObject.jsify(layout);
     var opts = {};
-    opts['showLink'] = showLink;
+    if (showLink != null) opts['showLink'] = showLink;
+    if (editable != null) opts['editable'] = editable;
     if (staticPlot != null) opts['staticPlot'] = staticPlot;
     if (linkText != null) opts['linkText'] = linkText;
-    opts['displaylogo'] = displaylogo;
+    if (displaylogo != null) opts['displaylogo'] = displaylogo;
     if (displayModeBar != null) opts['displayModeBar'] = displayModeBar;
+    if (responsive != null) opts['responsive'] = responsive;
     if (scrollZoom != null) opts['scrollZoom'] = scrollZoom;
     var _opts = JsObject.jsify(opts);
     _plotly!.callMethod('newPlot', [_container, _data, _layout, _opts]);
   }
+  final JsObject? _plotly;
+  final Element _container;
+
+  final JsObject _proxy;
 
   /// Creates a new plot in an empty `<div>` element with the given id.
   ///
@@ -100,6 +104,8 @@ class Plot {
     _proxy.callMethod('on', [eventType, ctrl.add]);
     return ctrl.stream;
   }
+
+  void react() {}
 
   /// An efficient means of changing parameters in the data array. When
   /// restyling, you may choose to have the specified changes effect as
