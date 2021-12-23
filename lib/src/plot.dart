@@ -8,7 +8,6 @@ import 'dart:html';
 import 'dart:js';
 import 'dart:async';
 
-/// Interactive scientific chart.
 class Plot {
   /// Creates a new plot in an empty `<div>` element.
   ///
@@ -53,10 +52,10 @@ class Plot {
   /// A note on sizing: You can either supply height and width in layout, or
   /// give the `div` a height and width in CSS.
   factory Plot.id(String id, List data, Map<String, dynamic> layout,
-      {bool showLink: false,
+      {bool showLink = false,
       bool? staticPlot,
       String? linkText,
-      bool displaylogo: false,
+      bool displaylogo = false,
       bool? displayModeBar,
       bool? scrollZoom}) {
     var elem = document.getElementById(id)!;
@@ -75,14 +74,14 @@ class Plot {
   /// give the `div` a height and width in CSS.
   factory Plot.selector(
       String selectors, List data, Map<String, dynamic> layout,
-      {bool showLink: false,
+      {bool showLink = false,
       bool? staticPlot,
       String? linkText,
-      bool displaylogo: false,
+      bool displaylogo = false,
       bool? displayModeBar,
       bool? scrollZoom}) {
     var elem = document.querySelector(selectors)!;
-    return new Plot(elem, data, layout,
+    return Plot(elem, data, layout,
         showLink: showLink,
         staticPlot: staticPlot,
         linkText: linkText,
@@ -97,6 +96,7 @@ class Plot {
   Stream get onClick => on("plotly_click");
   Stream get onBeforeHover => on("plotly_beforehover");
   Stream get onHover => on("plotly_hover");
+  Stream get onRelayout => on('plotly_relayout');
   Stream get onUnhover => on("plotly_unhover");
 
   Stream on(String eventType) {
@@ -105,7 +105,7 @@ class Plot {
     return ctrl.stream;
   }
 
-  void react() {}
+  // void react() {}
 
   /// An efficient means of changing parameters in the data array. When
   /// restyling, you may choose to have the specified changes effect as

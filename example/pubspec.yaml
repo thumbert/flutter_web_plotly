@@ -1,4 +1,4 @@
-name: line_and_scatter
+name: example_flutter_web_plotly
 description: A simple example of using Plotly in Flutter web
 
 # The following line prevents the package from being accidentally published to
@@ -15,10 +15,10 @@ dependencies:
     sdk: flutter
 
   flutter_web_plotly:
-    path: ../../
-
+    path: ../
 
 dev_dependencies:
+  flutter_lints: ^1.0.4
   flutter_test:
     sdk: flutter
 

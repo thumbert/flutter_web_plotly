@@ -11,9 +11,11 @@ you are only targeting the web, a great solution is to use the feature full
 
 ## Getting Started
 
-See the example folder for usage.  The simplest example is ```line_and_scatter```.
+See the example folder for usage.  
 
-In your project, inside your ```web/``` folder create a ```js/``` folder and copy the```plotly-latest.min.js```
+![alt text](plotly_example_1.png "Example")
+
+In your own project, inside your ```web/``` folder create a ```js/``` folder and copy the```plotly-latest.min.js```
 file inside.
 
 Edit your ```index.html``` file and add
@@ -23,7 +25,4 @@ Edit your ```index.html``` file and add
 ```
 to your ```<head>``` element.
 
-
-**Note** Hot reload does not work 😞.  A full restart of the app is needed in order
-to see the changes.  This is unfortunate.
 
