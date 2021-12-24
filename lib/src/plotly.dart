@@ -93,8 +93,8 @@ class Plotly extends StatefulWidget {
   void relayout(Map aobj) => plot.relayout(aobj);
 
   /// A method for updating both the data and layout objects at once.
-  void update(Map dataUpdate, Map layoutUpdate) =>
-      plot.update(dataUpdate, layoutUpdate);
+  void update(Map dataUpdate, Map layoutUpdate, [List<int>? indices]) =>
+      plot.update(dataUpdate, layoutUpdate, indices);
 
   @override
   State<StatefulWidget> createState() => _PlotlyState();

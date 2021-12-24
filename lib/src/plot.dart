@@ -30,16 +30,15 @@ class Plot {
     }
     var _data = JsObject.jsify(data);
     var _layout = JsObject.jsify(layout);
-    var opts = {};
-    if (showLink != null) opts['showLink'] = showLink;
-    if (editable != null) opts['editable'] = editable;
-    if (staticPlot != null) opts['staticPlot'] = staticPlot;
-    if (linkText != null) opts['linkText'] = linkText;
-    if (displaylogo != null) opts['displaylogo'] = displaylogo;
-    if (displayModeBar != null) opts['displayModeBar'] = displayModeBar;
-    if (responsive != null) opts['responsive'] = responsive;
-    if (scrollZoom != null) opts['scrollZoom'] = scrollZoom;
-    var _opts = JsObject.jsify(opts);
+    var _opts = makeOptions(
+        displaylogo: displaylogo,
+        displayModeBar: displayModeBar,
+        editable: editable,
+        linkText: linkText,
+        responsive: responsive,
+        showLink: showLink,
+        staticPlot: staticPlot,
+        scrollZoom: scrollZoom);
     _plotly!.callMethod('newPlot', [_container, _data, _layout, _opts]);
   }
   final JsObject? _plotly;
@@ -105,7 +104,30 @@ class Plot {
     return ctrl.stream;
   }
 
-  // void react() {}
+  /// After the plot is made, use this method to update it as it will be
+  /// much faster than recreating the plot.
+  void react(List data, Map<String, dynamic> layout,
+      {bool? displaylogo,
+      bool? displayModeBar,
+      bool? editable,
+      String? linkText,
+      bool? responsive,
+      bool? showLink,
+      bool? staticPlot,
+      bool? scrollZoom}) {
+    var _data = JsObject.jsify(data);
+    var _layout = JsObject.jsify(layout);
+    var _opts = makeOptions(
+        displaylogo: displaylogo,
+        displayModeBar: displayModeBar,
+        editable: editable,
+        linkText: linkText,
+        responsive: responsive,
+        showLink: showLink,
+        staticPlot: staticPlot,
+        scrollZoom: scrollZoom);
+    _plotly!.callMethod('react', [_container, _data, _layout, _opts]);
+  }
 
   /// An efficient means of changing parameters in the data array. When
   /// restyling, you may choose to have the specified changes effect as
@@ -234,10 +256,40 @@ class Plot {
     _plotly!.callMethod('purge', [_container]);
   }
 
-  /// A method for updating both the data and layout objects at once.
-  void update(Map dataUpdate, Map layoutUpdate) {
-    _plotly!.callMethod('update',
-        [_container, JsObject.jsify(dataUpdate), JsObject.jsify(layoutUpdate)]);
+  /// An efficient method for updating both the data and layout objects at once.
+  /// https://plotly.com/javascript/plotlyjs-function-reference/#plotlyupdate
+  void update(Map dataUpdate, Map layoutUpdate, [List<int>? indices]) {
+    var args = [
+      _container,
+      JsObject.jsify(dataUpdate),
+      JsObject.jsify(layoutUpdate),
+    ];
+    if (indices != null) {
+      args.add(JsObject.jsify(indices));
+    }
+    _plotly!.callMethod('update', args);
+  }
+
+  /// Create Plotly options
+  JsObject makeOptions(
+      {bool? displaylogo,
+      bool? displayModeBar,
+      bool? editable,
+      String? linkText,
+      bool? responsive,
+      bool? showLink,
+      bool? staticPlot,
+      bool? scrollZoom}) {
+    var opts = {};
+    if (showLink != null) opts['showLink'] = showLink;
+    if (editable != null) opts['editable'] = editable;
+    if (staticPlot != null) opts['staticPlot'] = staticPlot;
+    if (linkText != null) opts['linkText'] = linkText;
+    if (displaylogo != null) opts['displaylogo'] = displaylogo;
+    if (displayModeBar != null) opts['displayModeBar'] = displayModeBar;
+    if (responsive != null) opts['responsive'] = responsive;
+    if (scrollZoom != null) opts['scrollZoom'] = scrollZoom;
+    return JsObject.jsify(opts);
   }
 
   static getSchema() => context['Plotly']['PlotSchema'].callMethod("get");
