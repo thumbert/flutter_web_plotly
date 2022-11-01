@@ -42,7 +42,6 @@ class _PlotInteractionsState extends State<PlotInteractions> {
     addSeries();
     addSeries();
     plotly = Plotly(viewId: 'timeseries', data: traces, layout: layout);
-    // plotly.plot.on('plotly_relayout').
     plotly.plot.onRelayout.forEach((e) {
       // print(e);
       // e is a JsObject, not a Dart Map so you need to extract contents by hand

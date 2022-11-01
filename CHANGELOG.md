@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 (release 2022-10-31)
+- Expanded the 'line_and_scatter' example now to show how to use the **on_hover** events 
+to display additional information when the mouse is on top of a data point. 
+- Improve the examples README
+
 ## 0.2.0 (released 2021-12-23)
 - Improved the example significantly to show various plot interactions.  
 - Moved code from the build method to the init to improve performance.

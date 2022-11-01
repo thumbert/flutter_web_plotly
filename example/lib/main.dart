@@ -29,6 +29,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  ScrollController controller = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,17 +40,18 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Scrollbar(
-          isAlwaysShown: true,
+          controller: controller,
+          // thumbVisibility: true,
           child: ListView(
+            controller: controller,
             children: const [
-              SizedBox(height: 650, width: 800, child: LineAndScatter()),
+              LineAndScatter(),
               DecoratedBox(
                   decoration: BoxDecoration(color: Colors.grey),
                   child: SizedBox(
                     height: 4,
                   )),
               PlotInteractions(),
-              // Expanded(child: PlotInteractions()),
             ],
           ),
         ),
