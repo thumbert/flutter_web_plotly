@@ -34,10 +34,13 @@ class _LineAndScatterState extends State<LineAndScatter> {
     }
   ];
 
+  /// Height and width are not necessary and actually can't be set for plotly.
+  /// The plotly div needs to be wrapped in a [SizedBox] that specifies the
+  /// dimensions.
   static const layout = {
     'title': 'Line and Scatter Plot',
-    'height': 650,
-    'width': 800,
+    // 'height': 650,
+    // 'width': 800,
     'hovermode': 'closest',  // this is needed to select the points
   };
 
@@ -86,6 +89,7 @@ class _LineAndScatterState extends State<LineAndScatter> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 8,),
         const Text('  Move the mouse over a data point to see a message'),
@@ -93,6 +97,7 @@ class _LineAndScatterState extends State<LineAndScatter> {
         Text(message, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.purple),),
         SizedBox(height: 650, width: 800, child: plotly),
       ],
+
     );
   }
 }
