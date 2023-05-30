@@ -6,6 +6,9 @@ changes, for example Plotly.plot has been removed from the API in favor
 of Plotly.newPlot (maybe?)
 
 
+## release 2023-05-29
+- bump up the sdk upper limit to 4.0.0
+
 ## 0.2.1 (release 2022-10-31)
 - Expanded the 'line_and_scatter' example now to show how to use the **on_hover** events 
 to display additional information when the mouse is on top of a data point. 
