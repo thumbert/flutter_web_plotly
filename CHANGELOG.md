@@ -1,13 +1,13 @@
 # Changelog
 
 ## TODO:
-- need to update from plotly 1.58.4 to 2.16.x or more.  Looks like major 
-changes, for example Plotly.plot has been removed from the API in favor 
-of Plotly.newPlot (maybe?)
+- 
 
+## release 2023-08-09
+- Updated Plotly to version 2.25.1 from 1.58.0.  No issues. 
 
 ## release 2023-05-29
-- bump up the sdk upper limit to 4.0.0
+- Bump up the sdk upper limit to 4.0.0
 
 ## 0.2.1 (release 2022-10-31)
 - Expanded the 'line_and_scatter' example now to show how to use the **on_hover** events 
