@@ -3,7 +3,7 @@ import 'package:flutter_web_plotly/src/plot.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'package:flutter_web_plotly/src/fakeui/fake_platformviewregistry.dart'
-    if (dart.library.html) 'dart:ui' as ui;
+    if (dart.library.html) 'dart:ui_web' as ui;
 
 class Plotly extends StatefulWidget {
   /// the viewId should be unique across elements
@@ -40,8 +40,8 @@ class Plotly extends StatefulWidget {
     this.showLink = false,
     this.staticPlot,
     this.scrollZoom,
-    Key? key,
-  }) : super(key: key) {
+    super.key,
+  }) {
     divElement = DivElement()..id = viewId;
     bodyElement.append(divElement);
     ui.platformViewRegistry.registerViewFactory(

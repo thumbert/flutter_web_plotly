@@ -28,9 +28,9 @@ class Plot {
     if (_plotly == null) {
       throw StateError('plotly-latest.min.js not loaded');
     }
-    var _data = JsObject.jsify(data);
-    var _layout = JsObject.jsify(layout);
-    var _opts = makeOptions(
+    var dataJs = JsObject.jsify(data);
+    var layoutJs = JsObject.jsify(layout);
+    var optsJs = makeOptions(
         displaylogo: displaylogo,
         displayModeBar: displayModeBar,
         editable: editable,
@@ -39,7 +39,7 @@ class Plot {
         showLink: showLink,
         staticPlot: staticPlot,
         scrollZoom: scrollZoom);
-    _plotly!.callMethod('newPlot', [_container, _data, _layout, _opts]);
+    _plotly!.callMethod('newPlot', [_container, dataJs, layoutJs, optsJs]);
   }
   final JsObject? _plotly;
   final Element _container;
@@ -115,9 +115,9 @@ class Plot {
       bool? showLink,
       bool? staticPlot,
       bool? scrollZoom}) {
-    var _data = JsObject.jsify(data);
-    var _layout = JsObject.jsify(layout);
-    var _opts = makeOptions(
+    var dataJs = JsObject.jsify(data);
+    var layoutJs = JsObject.jsify(layout);
+    var optsJs = makeOptions(
         displaylogo: displaylogo,
         displayModeBar: displayModeBar,
         editable: editable,
@@ -126,7 +126,7 @@ class Plot {
         showLink: showLink,
         staticPlot: staticPlot,
         scrollZoom: scrollZoom);
-    _plotly!.callMethod('react', [_container, _data, _layout, _opts]);
+    _plotly!.callMethod('react', [_container, dataJs, layoutJs, optsJs]);
   }
 
   /// An efficient means of changing parameters in the data array. When
