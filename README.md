@@ -15,8 +15,8 @@ See the example folder for usage.
 
 ![alt text](plotly_example_1.png "Example")
 
-In your own project, inside your ```web/``` folder create a ```js/``` folder and copy the```plotly-latest.min.js```
-file inside.
+In your own project, inside your ```web/``` folder create a ```js/``` folder 
+and copy the```plotly-latest.min.js```file inside.
 
 Edit your ```index.html``` file and add
 ```
