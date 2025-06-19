@@ -76,7 +76,7 @@ class _WidgetBState extends State<WidgetB> {
     var aux = DateTime.now().hashCode;
     plotly = Plotly(
       viewId: 'plotly-point-$aux', // <-------- NOTE the name of the div!
-      data: [
+      traces: [
         {
           'x': List.generate(count, (i) => i),
           'y': List.generate(count, (i) => i * i),

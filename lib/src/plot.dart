@@ -1,286 +1,54 @@
-// @JS()
-library plotly;
-
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
-// import 'package:js/js.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:js';
-import 'dart:async';
+@JS()
+import 'package:web/web.dart' as web;
+import 'dart:js_interop';
 
 class Plot {
   /// Creates a new plot in an empty `<div>` element.
-  ///
-  /// A note on sizing: You can either supply height and width in layout, or
-  /// give the `div` a height and width in CSS.
-  Plot(Element container, List data, Map<String, dynamic> layout,
-      {bool? displaylogo,
-      bool? displayModeBar,
-      bool? editable,
-      String? linkText,
-      bool? responsive,
-      bool? showLink,
-      bool? staticPlot,
-      bool? scrollZoom})
-      : _plotly = context['Plotly'],
-        _container = container,
-        _proxy = JsObject.fromBrowserObject(container) {
-    if (_plotly == null) {
-      throw StateError('plotly-latest.min.js not loaded');
-    }
-    var dataJs = JsObject.jsify(data);
-    var layoutJs = JsObject.jsify(layout);
-    var optsJs = makeOptions(
-        displaylogo: displaylogo,
-        displayModeBar: displayModeBar,
-        editable: editable,
-        linkText: linkText,
-        responsive: responsive,
-        showLink: showLink,
-        staticPlot: staticPlot,
-        scrollZoom: scrollZoom);
-    _plotly!.callMethod('newPlot', [_container, dataJs, layoutJs, optsJs]);
-  }
-  final JsObject? _plotly;
-  final Element _container;
-
-  final JsObject _proxy;
-
-  /// Creates a new plot in an empty `<div>` element with the given id.
-  ///
-  /// A note on sizing: You can either supply height and width in layout, or
-  /// give the `div` a height and width in CSS.
-  factory Plot.id(String id, List data, Map<String, dynamic> layout,
-      {bool showLink = false,
-      bool? staticPlot,
-      String? linkText,
-      bool displaylogo = false,
-      bool? displayModeBar,
-      bool? scrollZoom}) {
-    var elem = document.getElementById(id)!;
-    return Plot(elem, data, layout,
-        showLink: showLink,
-        staticPlot: staticPlot,
-        linkText: linkText,
-        displaylogo: displaylogo,
-        displayModeBar: displayModeBar,
-        scrollZoom: scrollZoom);
+  Plot(
+    web.HTMLElement container,
+    List<Map<String, dynamic>> traces,
+    Map<String, dynamic> layout, {
+    bool? displaylogo,
+    bool? displayModeBar,
+    bool? editable,
+    String? linkText,
+    bool? responsive,
+    bool? showLink,
+    bool? staticPlot,
+    bool? scrollZoom,
+  }) : proxy = container as PlotlyExt {
+    var opts = makeOptions(
+      displaylogo: displaylogo,
+      displayModeBar: displayModeBar,
+      editable: editable,
+      linkText: linkText,
+      responsive: responsive,
+      showLink: showLink,
+      staticPlot: staticPlot,
+      scrollZoom: scrollZoom,
+    );
+    PlotlyExt.newPlot(
+      container,
+      traces.jsify() as JSObject,
+      layout.jsify() as JSObject,
+      opts.jsify() as JSObject,
+    );
   }
 
-  /// Creates a new plot in an empty `<div>` element with the given [selectors].
-  ///
-  /// A note on sizing: You can either supply height and width in layout, or
-  /// give the `div` a height and width in CSS.
-  factory Plot.selector(
-      String selectors, List data, Map<String, dynamic> layout,
-      {bool showLink = false,
-      bool? staticPlot,
-      String? linkText,
-      bool displaylogo = false,
-      bool? displayModeBar,
-      bool? scrollZoom}) {
-    var elem = document.querySelector(selectors)!;
-    return Plot(elem, data, layout,
-        showLink: showLink,
-        staticPlot: staticPlot,
-        linkText: linkText,
-        displaylogo: displaylogo,
-        displayModeBar: displayModeBar,
-        scrollZoom: scrollZoom);
-  }
-
-  get data => _proxy['data'];
-  get layout => _proxy['layout'];
-
-  Stream get onClick => on("plotly_click");
-  Stream get onBeforeHover => on("plotly_beforehover");
-  Stream get onHover => on("plotly_hover");
-  Stream get onRelayout => on('plotly_relayout');
-  Stream get onUnhover => on("plotly_unhover");
-
-  Stream on(String eventType) {
-    var ctrl = StreamController();
-    _proxy.callMethod('on', [eventType, ctrl.add]);
-    return ctrl.stream;
-  }
-
-  /// After the plot is made, use this method to update it as it will be
-  /// much faster than recreating the plot.
-  void react(List data, Map<String, dynamic> layout,
-      {bool? displaylogo,
-      bool? displayModeBar,
-      bool? editable,
-      String? linkText,
-      bool? responsive,
-      bool? showLink,
-      bool? staticPlot,
-      bool? scrollZoom}) {
-    var dataJs = JsObject.jsify(data);
-    var layoutJs = JsObject.jsify(layout);
-    var optsJs = makeOptions(
-        displaylogo: displaylogo,
-        displayModeBar: displayModeBar,
-        editable: editable,
-        linkText: linkText,
-        responsive: responsive,
-        showLink: showLink,
-        staticPlot: staticPlot,
-        scrollZoom: scrollZoom);
-    _plotly!.callMethod('react', [_container, dataJs, layoutJs, optsJs]);
-  }
-
-  /// An efficient means of changing parameters in the data array. When
-  /// restyling, you may choose to have the specified changes effect as
-  /// many traces as desired. The update is given as a single [Map] and
-  /// the traces that are effected are given as a list of traces indices.
-  /// Note, leaving the trace indices unspecified assumes that you want
-  /// to restyle *all* the traces.
-  void restyle(Map aobj, [List<int>? traces]) {
-    var args = [_container, JsObject.jsify(aobj)];
-    if (traces != null) {
-      args.add(JsObject.jsify(traces));
-    }
-    _plotly!.callMethod('restyle', args);
-  }
-
-  /// An efficient means of updating just the layout of a plot.
-  void relayout(Map aobj) {
-    _plotly!.callMethod('relayout', [_container, JsObject.jsify(aobj)]);
-  }
-
-  /// Adds a new trace to an existing plot at any location in its data array.
-  void addTrace(Map trace, [int? newIndex]) {
-    if (newIndex != null) {
-      addTraces([trace], [newIndex]);
-    } else {
-      addTraces([trace]);
-    }
-  }
-
-  /// Adds new traces to an existing plot at any location in its data array.
-  void addTraces(List<Map> traces, [List<int>? newIndices]) {
-    var args = [_container, JsObject.jsify(traces)];
-    if (newIndices != null) {
-      args.add(JsObject.jsify(newIndices));
-    }
-    _plotly!.callMethod('addTraces', args);
-  }
-
-  /// Removes a trace from a plot by specifying the index of the trace to be
-  /// removed.
-  void deleteTrace(int index) => deleteTraces([index]);
-
-  /// Removes traces from a plot by specifying the indices of the traces to be
-  /// removed.
-  void deleteTraces(List<int> indices) {
-    _plotly!.callMethod('deleteTraces', [_container, JsObject.jsify(indices)]);
-  }
-
-  /// Extend traces
-  void extendTraces(Map aobj, List<int> indices) {
-    var args = [_container, JsObject.jsify(aobj), JsObject.jsify(indices)];
-    _plotly!.callMethod('extendTraces', args);
-  }
-
-  /// Reposition a trace in the plot. This will change the ordering of the
-  /// layering and the legend.
-  void moveTrace(int currentIndex, int newIndex) =>
-      moveTraces([currentIndex], [newIndex]);
-
-  /// Reorder traces in the plot. This will change the ordering of the
-  /// layering and the legend.
-  void moveTraces(List<int> currentIndices, List<int> newIndices) {
-    _plotly!.callMethod('moveTraces', [
-      _container,
-      JsObject.jsify(currentIndices),
-      JsObject.jsify(newIndices)
-    ]);
-  }
-
-  /// Animates to frames.
-  ///
-  /// Parameter [frames] can be a single frame, array of
-  /// frames, or group to which to animate. The intent is inferred by
-  /// the type of the input. Valid inputs are:
-  ///   * [String], e.g. 'groupname': animate all frames of a given `group` in
-  ///     the order in which they are defined via [addFrames];
-  ///   * [List<String>], e.g. ['frame1', frame2']: a list of frames by
-  ///     name to which to animate in sequence;
-  ///   * [Map], e.g {data: ...}: a frame definition to which to animate. The frame is not
-  ///     and does not need to be added via [addFrames]. It may contain any of
-  ///     the properties of a frame, including `data`, `layout`, and `traces`. The
-  ///     frame is used as provided and does not use the `baseframe` property.
-  ///   * [List<Map>], e.g. [{data: ...}, {data: ...}]: a list of frame objects,
-  ///     each following the same rules as a single `object`.
-  void animate(frames, [Map? opts]) {
-    final args = <dynamic>[_container];
-    args.add((frames is Iterable || frames is Map)
-        ? JsObject.jsify(frames)
-        : frames);
-    if (opts != null) args.add(JsObject.jsify(opts));
-    _plotly!.callMethod('animate', args);
-  }
-
-  /// Registers new frames.
-  ///
-  /// [frameList] is a list of frame definitions, in which each object includes any of:
-  /// * name: {[String]} name of frame to add;
-  /// * data: {[List<Map>]} trace data;
-  /// * layout: {[Map]} layout definition;
-  /// * traces: {[List<int>]} trace indices;
-  /// * baseframe {[String]} name of frame from which this frame gets defaults.
-  ///
-  /// [indices] is an list of integer indices matching the respective frames in [frameList]. If not
-  /// provided, an index will be provided in serial order. If already used, the frame
-  /// will be overwritten.
-  void addFrames(List<Map> frameList, [List? indices]) {
-    var args = [_container, JsObject.jsify(frameList)];
-    if (indices != null) args.add(JsObject.jsify(indices));
-    _plotly!.callMethod('addFrames', args);
-  }
-
-  /// Deletes frames from plot by [indices].
-  void deleteFrames(List<int> indices) {
-    _plotly!.callMethod('deleteFrames', [_container, JsObject.jsify(indices)]);
-  }
-
-  /// Use redraw to trigger a complete recalculation and redraw of the graph.
-  /// This is not the fastest way to change single attributes, but may be the
-  /// simplest way. You can make any arbitrary change to the data and layout
-  /// objects, including completely replacing them, then call redraw.
-  void redraw() {
-    _plotly!.callMethod('redraw', [_container]);
-  }
-
-  void purge() {
-    _plotly!.callMethod('purge', [_container]);
-  }
-
-  /// An efficient method for updating both the data and layout objects at once.
-  /// https://plotly.com/javascript/plotlyjs-function-reference/#plotlyupdate
-  void update(Map dataUpdate, Map layoutUpdate, [List<int>? indices]) {
-    var args = [
-      _container,
-      JsObject.jsify(dataUpdate),
-      JsObject.jsify(layoutUpdate),
-    ];
-    if (indices != null) {
-      args.add(JsObject.jsify(indices));
-    }
-    _plotly!.callMethod('update', args);
-  }
+  final PlotlyExt proxy;
 
   /// Create Plotly options
-  JsObject makeOptions(
-      {bool? displaylogo,
-      bool? displayModeBar,
-      bool? editable,
-      String? linkText,
-      bool? responsive,
-      bool? showLink,
-      bool? staticPlot,
-      bool? scrollZoom}) {
-    var opts = {};
+  Map<String, dynamic> makeOptions({
+    bool? displaylogo,
+    bool? displayModeBar,
+    bool? editable,
+    String? linkText,
+    bool? responsive,
+    bool? showLink,
+    bool? staticPlot,
+    bool? scrollZoom,
+  }) {
+    var opts = <String, dynamic>{};
     if (showLink != null) opts['showLink'] = showLink;
     if (editable != null) opts['editable'] = editable;
     if (staticPlot != null) opts['staticPlot'] = staticPlot;
@@ -289,8 +57,71 @@ class Plot {
     if (displayModeBar != null) opts['displayModeBar'] = displayModeBar;
     if (responsive != null) opts['responsive'] = responsive;
     if (scrollZoom != null) opts['scrollZoom'] = scrollZoom;
-    return JsObject.jsify(opts);
+    return opts;
   }
+}
 
-  static getSchema() => context['Plotly']['PlotSchema'].callMethod("get");
+/// See the corresponding JS API implementation here:
+/// https://github.com/plotly/plotly.js/blob/master/src/plot_api/plot_api.js
+@JS('Plotly')
+extension type PlotlyExt(JSObject _) implements JSObject {
+  external static void newPlot(
+    web.HTMLElement gd,
+    JSObject traces,
+    JSObject layout,
+    JSObject config,
+  );
+
+  /// Add new traces at the [positionIndices] positions.
+  external static void addTraces(
+    web.HTMLElement gd,
+    JSObject newTraces,
+    JSArray positionIndices,
+  );
+
+  /// Add new traces at the [positionIndices] positions.
+  external static void deleteTraces(
+    web.HTMLElement gd,
+    JSArray positionIndices,
+  );
+
+  ///
+  external static void downloadImage(web.HTMLElement gd, JSObject options);
+
+  external static void extendTraces(
+    web.HTMLElement gd,
+    JSObject dataUpdate,
+    JSArray positionIndices,
+    JSNumber maxPoints,
+  );
+
+  external static void moveTraces(
+    web.HTMLElement gd,
+    JSArray currentIndices,
+    JSArray newIndices,
+  );
+
+  external static void prependTraces(
+    web.HTMLElement gd,
+    JSObject dataUpdate,
+    JSArray positionIndices,
+    JSNumber maxPoints,
+  );
+
+  external void on(JSString name, JSFunction f);
+
+  external static void relayout(web.HTMLElement gd, JSObject data);
+
+  external static void restyle(
+    web.HTMLElement gd,
+    JSObject data,
+    JSArray traceIndex,
+  );
+
+  external static void update(
+    web.HTMLElement gd,
+    JSObject data,
+    JSObject layout,
+    JSArray traceIndices,
+  );
 }

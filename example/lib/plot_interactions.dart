@@ -1,9 +1,9 @@
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plotly/flutter_web_plotly.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:js' as js;
 
 class PlotInteractions extends StatefulWidget {
   const PlotInteractions({Key? key}) : super(key: key);
@@ -41,25 +41,24 @@ class _PlotInteractionsState extends State<PlotInteractions> {
     // start with two series
     addSeries();
     addSeries();
-    plotly = Plotly(viewId: 'timeseries', data: traces, layout: layout);
-    plotly.plot.onRelayout.forEach((e) {
-      // print(e);
-      // e is a JsObject, not a Dart Map so you need to extract contents by hand
-      var keys = js.context['Object'].callMethod('keys', [e]) as List;
-      // print(js.context['Object'].callMethod('keys', [e]));
-      setState(() {
-        if (keys.contains('xaxis.range[0]')) {
-          // Pick up only the events when the axes get resized by a mouse
-          // selection on the screen
-          relayoutOutput += 'from: ' +
-              e['xaxis.range[0]'].toString() + // a double
-              ' to: ' +
-              e['xaxis.range[1]'].toString(); // a double
-        } else {
-          relayoutOutput = '';
-        }
-      });
+    plotly = Plotly(viewId: 'timeseries', traces: traces, layout: layout);
+    plotly.onRelayout((JSObject data) {
+      if (data.hasProperty('xaxis.range[0]'.toJS).toDart) {
+        var x0 =
+            (data.getProperty('xaxis.range[0]'.toJS) as JSNumber).toDartDouble;
+        var x1 =
+            (data.getProperty('xaxis.range[1]'.toJS) as JSNumber).toDartDouble;
+        setState(() {
+          relayoutOutput =
+              'Selected xaxis from: (${x0.toStringAsFixed(2)}, ${x1.toStringAsFixed(2)})';
+        });
+      } else {
+        setState(() {
+          relayoutOutput = 'Nothing selected';
+        });
+      }
     });
+
     super.initState();
   }
 
@@ -80,7 +79,7 @@ class _PlotInteractionsState extends State<PlotInteractions> {
               child: ElevatedButton(
                   onPressed: () {
                     addSeries();
-                    plotly.addTrace(traces.last);
+                    plotly.addTraces([traces.last], [traces.length - 1]);
                   },
                   child: const Text('Add Series')),
             ),
@@ -88,7 +87,7 @@ class _PlotInteractionsState extends State<PlotInteractions> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                   onPressed: () {
-                    plotly.deleteTrace(traces.length - 1);
+                    plotly.deleteTraces([traces.length - 1]);
                     traces.removeAt(traces.length - 1);
                   },
                   child: const Text('Delete Series')),
@@ -135,6 +134,36 @@ class _PlotInteractionsState extends State<PlotInteractions> {
                     showHighlights = showHighlights ? false : true;
                   },
                   child: const Text('Relayout')),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                  onPressed: () {
+                    // the data property contains the traces
+                    var data =
+                        (plotly.plot.proxy.getProperty('data'.toJS) as JSArray)
+                            .toDart;
+                    // get the 'y' of the first trace
+                    var y =
+                        ((data[0] as JSObject).getProperty('y'.toJS) as JSArray)
+                            .toDart;
+                    var n = y.length;
+                    // append 2000 hours of observations to the end of the series
+                    var epsilon =
+                        List.generate(2000, (i) => random.nextDouble() - 0.5);
+                    var current = (y.last as JSNumber).toDartDouble;
+                    var ext = {
+                      'x': [List.generate(2000, (i) => n + i)],
+                      'y': [
+                        epsilon.map((e) {
+                          current += e;
+                          return current;
+                        }).toList()
+                      ],
+                    };
+                    plotly.extendTraces(ext, [0], n + 2000);
+                  },
+                  child: const Text('Extend Series')),
             ),
           ],
         ),
