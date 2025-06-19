@@ -3,6 +3,9 @@
 ## TODO:
 - 
 
+## 1.0.0 (release 2025-06-19)
+- Move to package:web and dart:js_interop
+
 ## release 2023-12-20
 - Move to dart:ui_web for platformviewregistry.
 - Upgraded Plotly to version 2.27.0
