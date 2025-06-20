@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plotly/src/plot.dart';
 import 'package:web/web.dart' as web;
 import 'package:flutter_web_plotly/src/fakeui/fake_platformviewregistry.dart'
-    if (dart.library.html) 'dart:ui_web' as ui;
+    if (dart.library.html) 'dart:ui_web'
+    as ui;
 
 ///
 /// See https://github.com/senthilnasa/high_chart/blob/master/lib/src/web/high_chart.dart
@@ -28,19 +29,25 @@ class Plotly extends StatefulWidget {
     chartDiv = web.HTMLDivElement()..id = viewId;
     bodyElement.append(chartDiv);
     ui.platformViewRegistry.registerViewFactory(
-        viewId,
-        (viewId) => bodyElement
-          ..style.width = '100%'
-          ..style.height = '100%');
-    plot = Plot(chartDiv, traces, layout,
-        displaylogo: displaylogo,
-        displayModeBar: displayModeBar,
-        editable: editable,
-        linkText: linkText,
-        responsive: responsive,
-        showLink: showLink,
-        staticPlot: staticPlot,
-        scrollZoom: scrollZoom);
+      viewId,
+      (viewId) =>
+          bodyElement
+            ..style.width = '100%'
+            ..style.height = '100%',
+    );
+    plot = Plot(
+      chartDiv,
+      traces,
+      layout,
+      displaylogo: displaylogo,
+      displayModeBar: displayModeBar,
+      editable: editable,
+      linkText: linkText,
+      responsive: responsive,
+      showLink: showLink,
+      staticPlot: staticPlot,
+      scrollZoom: scrollZoom,
+    );
   }
 
   /// the viewId should be unique across elements
@@ -71,10 +78,15 @@ class Plotly extends StatefulWidget {
   late final web.HTMLDivElement chartDiv;
   late final Plot plot;
 
+  Map<String, dynamic> get config => plot.config;
+
   /// Add new traces at the [positionIndices] positions.
   void addTraces(List<Map<String, dynamic>> traces, List<int> positionIndices) {
-    PlotlyExt.addTraces(chartDiv, traces.jsify() as JSObject,
-        positionIndices.jsify() as JSArray);
+    PlotlyExt.addTraces(
+      chartDiv,
+      traces.jsify() as JSObject,
+      positionIndices.jsify() as JSArray,
+    );
   }
 
   /// Delete the traces at this [index]
@@ -84,14 +96,15 @@ class Plotly extends StatefulWidget {
 
   /// See https://github.com/plotly/plotly.js/blob/master/src/plot_api/to_image.js
   /// The [format] can be one of ```'png', 'jpeg', 'webp', 'svg', 'full-json'```.
-  void downloadImage(
-      {required String filename,
-      required int width,
-      required int height,
-      String format = 'png',
-      num scale = 1,
-      bool imageDataOnly = false,
-      bool setBackground = false}) {
+  void downloadImage({
+    required String filename,
+    required int width,
+    required int height,
+    String format = 'png',
+    num scale = 1,
+    bool imageDataOnly = false,
+    bool setBackground = false,
+  }) {
     var options = {
       'filename': filename,
       'width': width,
@@ -106,22 +119,39 @@ class Plotly extends StatefulWidget {
 
   /// Extend existing traces at the [positionIndices] positions.
   void extendTraces(
-      Map<String, dynamic> update, List<int> positionIndices, int maxPoints) {
-    PlotlyExt.extendTraces(chartDiv, update.jsify() as JSObject,
-        positionIndices.jsify() as JSArray, maxPoints.toJS);
+    Map<String, dynamic> update,
+    List<int> positionIndices,
+    int maxPoints,
+  ) {
+    PlotlyExt.extendTraces(
+      chartDiv,
+      update.jsify() as JSObject,
+      positionIndices.jsify() as JSArray,
+      maxPoints.toJS,
+    );
   }
 
   /// Delete the traces at this [index]
   void moveTraces(List<int> currentIndices, List<int> newIndices) {
-    PlotlyExt.moveTraces(chartDiv, currentIndices.jsify() as JSArray,
-        newIndices.jsify() as JSArray);
+    PlotlyExt.moveTraces(
+      chartDiv,
+      currentIndices.jsify() as JSArray,
+      newIndices.jsify() as JSArray,
+    );
   }
 
   /// Add values at the beginning of the trace for trace at [positionIndices].
   void prependTraces(
-      Map<String, dynamic> update, List<int> positionIndices, int maxPoints) {
-    PlotlyExt.prependTraces(chartDiv, update.jsify() as JSObject,
-        positionIndices.jsify() as JSArray, maxPoints.toJS);
+    Map<String, dynamic> update,
+    List<int> positionIndices,
+    int maxPoints,
+  ) {
+    PlotlyExt.prependTraces(
+      chartDiv,
+      update.jsify() as JSObject,
+      positionIndices.jsify() as JSArray,
+      maxPoints.toJS,
+    );
   }
 
   /// For example:
@@ -144,6 +174,19 @@ class Plotly extends StatefulWidget {
     plot.proxy.on('plotly_unhover'.toJS, f.toJS);
   }
 
+  void react(
+    List<Map<String, dynamic>> traces,
+    Map<String, dynamic> layout,
+    Map<String, dynamic> config,
+  ) {
+    PlotlyExt.react(
+      chartDiv,
+      traces.jsify() as JSObject,
+      layout.jsify() as JSObject,
+      config.jsify() as JSObject,
+    );
+  }
+
   /// An efficient way of updating just the layout of a plot.
   void relayout(Map<String, dynamic> object) {
     PlotlyExt.relayout(chartDiv, object.jsify() as JSObject);
@@ -155,7 +198,10 @@ class Plotly extends StatefulWidget {
   /// the traces that are effected are given as a list of traces indices.
   void restyle(Map<String, dynamic> object, List<int> traceIndex) {
     PlotlyExt.restyle(
-        chartDiv, object.jsify() as JSObject, traceIndex.jsify() as JSArray);
+      chartDiv,
+      object.jsify() as JSObject,
+      traceIndex.jsify() as JSArray,
+    );
   }
 
   void redraw(void Function() f) {
@@ -164,12 +210,18 @@ class Plotly extends StatefulWidget {
 
   /// An efficient means of updating both the data array and layout object in
   /// an existing plot, basically a combination of Plotly.restyle and Plotly.relayout.
-  void update(Map<String, dynamic> dataUpdate,
-      Map<String, dynamic> layoutUpdate, List<int> traceIndices) {
-    PlotlyExt.update(chartDiv, dataUpdate.jsify() as JSObject,
-        layoutUpdate.jsify() as JSObject, traceIndices.jsify() as JSArray);
+  void update(
+    Map<String, dynamic> dataUpdate,
+    Map<String, dynamic> layoutUpdate,
+    List<int> traceIndices,
+  ) {
+    PlotlyExt.update(
+      chartDiv,
+      dataUpdate.jsify() as JSObject,
+      layoutUpdate.jsify() as JSObject,
+      traceIndices.jsify() as JSArray,
+    );
   }
-
 
   @override
   State<StatefulWidget> createState() => _PlotlyState();

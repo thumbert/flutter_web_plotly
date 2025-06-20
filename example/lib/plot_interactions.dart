@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plotly/flutter_web_plotly.dart';
 
 class PlotInteractions extends StatefulWidget {
-  const PlotInteractions({Key? key}) : super(key: key);
+  const PlotInteractions({super.key});
 
   @override
-  _PlotInteractionsState createState() => _PlotInteractionsState();
+  State<StatefulWidget> createState() => _PlotInteractionsState();
 }
 
 class _PlotInteractionsState extends State<PlotInteractions> {
@@ -19,12 +19,12 @@ class _PlotInteractionsState extends State<PlotInteractions> {
 
   void addSeries() {
     var epsilon = List.generate(8760, (i) => random.nextDouble() - 0.5);
-    var _current = 0.0;
+    var current = 0.0;
     traces.add({
       'x': List.generate(8760, (i) => i),
       'y': epsilon.map((e) {
-        _current += e;
-        return _current;
+        current += e;
+        return current;
       }),
       'mode': 'lines',
       'name': 'series${traces.length}',
@@ -172,7 +172,7 @@ class _PlotInteractionsState extends State<PlotInteractions> {
         ),
         const Text('Select an area on the chart with the mouse ...'),
         Text('The xAxis selection is $relayoutOutput'),
-        SizedBox(height: 650, width: 800, child: plotly),
+        SizedBox(height: 675, width: 800, child: plotly),
       ],
     );
   }

@@ -7,33 +7,14 @@ import 'package:flutter_web_plotly/flutter_web_plotly.dart';
 /// You need to provide a unique key and to have a unique div for the plotly
 /// chart.
 ///
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class ChartWithAsyncData extends StatefulWidget {
+  const ChartWithAsyncData({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: WidgetA(),
-        ),
-      ),
-    );
-  }
+  createState() => _ChartWithAsyncDataState();
 }
 
-class WidgetA extends StatefulWidget {
-  const WidgetA({Key? key}) : super(key: key);
-
-  @override
-  createState() => _WidgetAState();
-}
-
-class _WidgetAState extends State<WidgetA> {
+class _ChartWithAsyncDataState extends State<ChartWithAsyncData> {
   List<String> points = [
     "Item 1",
     "Item 2",
@@ -42,7 +23,11 @@ class _WidgetAState extends State<WidgetA> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(
+          height: 12,
+        ),
         ElevatedButton(
           child: const Text("Add Point"),
           onPressed: () => setState(() {
@@ -59,7 +44,7 @@ class _WidgetAState extends State<WidgetA> {
 }
 
 class WidgetB extends StatefulWidget {
-  const WidgetB({Key? key, required this.count}) : super(key: key);
+  const WidgetB({super.key, required this.count});
   final int count;
 
   @override

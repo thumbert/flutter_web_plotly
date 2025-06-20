@@ -17,7 +17,7 @@ class Plot {
     bool? staticPlot,
     bool? scrollZoom,
   }) : proxy = container as PlotlyExt {
-    var opts = makeOptions(
+    config = makeOptions(
       displaylogo: displaylogo,
       displayModeBar: displayModeBar,
       editable: editable,
@@ -31,11 +31,12 @@ class Plot {
       container,
       traces.jsify() as JSObject,
       layout.jsify() as JSObject,
-      opts.jsify() as JSObject,
+      config.jsify() as JSObject,
     );
   }
 
   final PlotlyExt proxy;
+  late Map<String, dynamic> config;
 
   /// Create Plotly options
   Map<String, dynamic> makeOptions({
@@ -109,6 +110,13 @@ extension type PlotlyExt(JSObject _) implements JSObject {
   );
 
   external void on(JSString name, JSFunction f);
+
+  external static void react(
+    web.HTMLElement gd,
+    JSObject traces,
+    JSObject layout,
+    JSObject config,
+  );
 
   external static void relayout(web.HTMLElement gd, JSObject data);
 

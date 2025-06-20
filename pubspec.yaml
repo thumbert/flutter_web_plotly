@@ -2,7 +2,7 @@ name: flutter_web_plotly
 description: Plotly for Flutter web
 
 publish_to: 'none' 
-version: 1.0.1
+version: 1.0.2
 
 environment:
   sdk: ">=3.7.0 <4.0.0"

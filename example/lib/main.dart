@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'line_and_scatter.dart';
 import 'plot_interactions.dart';
+import 'plot_with_slider.dart';
+import 'redraw_plotly.dart';
 
 void main() async {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +24,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
   final String title;
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<StatefulWidget> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   ScrollController controller = ScrollController();
 
   @override
@@ -52,6 +53,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 4,
                   )),
               PlotInteractions(),
+              DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.grey),
+                  child: SizedBox(
+                    height: 4,
+                  )),
+              PlotWithSlider(),
+              DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.grey),
+                  child: SizedBox(
+                    height: 4,
+                  )),
+              ChartWithAsyncData(),
             ],
           ),
         ),

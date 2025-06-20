@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plotly/flutter_web_plotly.dart';
 
 class LineAndScatter extends StatefulWidget {
-  const LineAndScatter({Key? key}) : super(key: key);
+  const LineAndScatter({super.key});
 
   @override
   State<StatefulWidget> createState() => _LineAndScatterState();

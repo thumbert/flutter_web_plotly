@@ -3,6 +3,10 @@
 ## TODO:
 - 
 
+## 1.0.2 (2025-06-20)
+- Fix, add more examples
+- Expose plotly react() method
+
 ## 1.0.1 (2025-06-19)
 - Revert
 
